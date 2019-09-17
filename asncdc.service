@@ -1,0 +1,17 @@
+[Unit]
+Description=asnapply Replication
+After=network.target db2fmcd.service
+
+[Service]
+Type=simple
+EnvironmentFile=<db2inst1 HOME>/asndb2env
+WorkingDirectory=<db2inst1 HOME>
+ExecStart=/opt/ibm/db2/V11.5/bin/asncap capture_schema=<ASN SCHEMA> capture_server=<DATABASE NAMe>  logstdout=y
+Restart=always
+User=<db2inst1 user>
+Group=<db2iadm1 group>
+LimitNOFILE=10240
+LimitFSIZE=infinity
+
+[Install]
+WantedBy=multi-user.target
