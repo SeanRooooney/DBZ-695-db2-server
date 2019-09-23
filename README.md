@@ -19,11 +19,16 @@ db2 import from /asncdctools/src/data2.csv of del replace into DEMO.SIMPLE
 python3.6 /asncdctools/src/asntable.py -a   -s BBANK -t DONORS
 python3.6 /asncdctools/src/asntable.py -a   -s DEMO -t SIMPLE
 
+db2 update db cfg for TESTDB using logarchmeth1 logretain 
+db2 backup db TESTDB to /dev/null
+db2 restart db TESTDB
+
+
 /opt/ibm/db2/V11.5/bin/asncap capture_schema=ASNCDC capture_server=TESTDB  logstdout=y
 
 # stop it ( ^C )  wait until stoped. (take some seconds)
 
-Change in ASNCDC.IBMSNAPPREGISTER STATE for all tables the STATE to 'A' 
+Change in ASNCDC.IBMSNAP_REGISTER STATE for all tables the STATE to 'A' 
 
 # start asncap again 
 
