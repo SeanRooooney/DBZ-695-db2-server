@@ -1,0 +1,11 @@
+{
+    "db2": {
+        "host": "skipnix.zurich.ibm.com",
+        "port": "50000",
+        "security": "NO",
+        "database": "TESTDB",
+        "user" : "db2inst1",
+        "pwd":"xxxxxxxx",
+        "asnschema":"ASNCDC"
+    }
+}
