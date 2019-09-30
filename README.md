@@ -65,6 +65,10 @@ $db2 import from /asncdctools/src/data2.csv of del replace into DEMO.SIMPLE
 
 # register tables in ASN
 
+cd /asncdctools/src/
+
+edit connection.json and update values for the db2 connection
+
 python3.6 /asncdctools/src/asntable.py -a   -s BBANK -t DONORS
 python3.6 /asncdctools/src/asntable.py -a   -s DEMO -t SIMPLE
 
@@ -84,6 +88,14 @@ db2 bind db2schema.bnd blocking all grant public sqlerror continue
 # stop it ( ^C )  wait until stoped. (take some seconds)
 
 Change in ASNCDC.IBMSNAP_REGISTER STATE for all tables the STATE to 'A' 
+
+ceck the state of all registered tables:
+cd /asncdctools/src/
+python3.6 /asncdctools/src/asntablestate.py 
+
+update all tables with the STATE to A
+
+python3.6 /asncdctools/src/asntablestate.py -a
 
 # start asncap again 
 
