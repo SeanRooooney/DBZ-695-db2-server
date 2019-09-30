@@ -72,24 +72,38 @@ edit connection.json and update values for the db2 connection
 python3.6 /asncdctools/src/asntable.py -a   -s BBANK -t DONORS
 python3.6 /asncdctools/src/asntable.py -a   -s DEMO -t SIMPLE
 
-db2 update db cfg for TESTDB using logarchmeth1 logretain 
-db2 backup db TESTDB to /dev/null
-db2 restart db TESTDB
+CDC is only possible when the log is a retain mode. In addition this require
+taking a backup on the database such that there is an initial checkpoint
+
+$ db2 update db cfg for TESTDB using logarchmeth1 logretain 
+$ db2 backup db TESTDB to /dev/null
+$ db2 restart db TESTDB
+
+If you get the following error, it maybe that the you need to bind
+certain functions in public mode
+SRO: Don't undertstand this need to investigate
+
 
 com.ibm.db2.jcc.a.SqlException: DB2 SQL error: SQLCODE: -443, SQLSTATE: 38553, SQLERRMC: SYSIBM.SQLCOLUMNS (SCI95599)
 
-cd sqllib/bnd
-db2 connect to TESTDB
-db2 bind db2schema.bnd blocking all grant public sqlerror continue 
+Do the following on the database:
 
+$ cd sqllib/bnd
+$ db2 connect to TESTDB
+$ db2 bind db2schema.bnd blocking all grant public sqlerror continue 
+
+We start the ASN Capture service
 
 /opt/ibm/db2/V11.5/bin/asncap capture_schema=ASNCDC capture_server=TESTDB  logstdout=y
+
+SRO: Don't understand the need to stop/restart this
+
 
 # stop it ( ^C )  wait until stoped. (take some seconds)
 
 Change in ASNCDC.IBMSNAP_REGISTER STATE for all tables the STATE to 'A' 
 
-ceck the state of all registered tables:
+check the state of all registered tables:
 cd /asncdctools/src/
 python3.6 /asncdctools/src/asntablestate.py 
 
@@ -101,7 +115,10 @@ python3.6 /asncdctools/src/asntablestate.py -a
 
 /opt/ibm/db2/V11.5/bin/asncap capture_schema=ASNCDC capture_server=TESTDB  logstdout=y
 
+The DB2 debezium connector is then started and the tables are snapshotted.
+Any changes in the ASN Capture tables should then be propated.
 
+For example:
 
 # insert sample
 insert into DEMO.SIMPLE (USERNAME, NAME, MAIL, ID)  VALUES ('MY','MARIA','M@ALL.CH',1000);
