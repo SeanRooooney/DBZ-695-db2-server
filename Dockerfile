@@ -11,4 +11,4 @@ RUN mkdir -p /asncdctools/src
 
 ADD src /asncdctools/src
 
-RUN chmod -R  666  /asncdctools
+RUN chmod -R  777  /asncdctools
