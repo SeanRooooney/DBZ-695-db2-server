@@ -42,6 +42,11 @@ Additional options are available in the base DB2 image
 CONFIGURING ASN ON DB2
 ==============================
 
+Make sure the database is up and running
+$ docker logs <CONTAINER ID>
+
+Check for "(*) Setup has completed."
+
 Connect to container
 $ docker exec -it <CONTAINER ID> /bin/bash
 
@@ -54,15 +59,15 @@ $ db2 connect to <TEST_DATABASE_NAME>
 
 CDC is only possible when the log property "logarchmeth1" is NOT off. There are many modes
 for the transactiopn log we have been using "logretain".
-In addition this requires
-taking a backup on the database such that there is an initial checkpoint
+In addition this requires taking a backup on the database such that there is an initial checkpoint.
+NOTE: This is not required in the DB2 docker image, as it is already set up properly.
 
 $ db2 update db cfg for TESTDB using logarchmeth1 logretain 
 $ db2 backup db TESTDB to /dev/null
 $ db2 restart db TESTDB
 
 
-Run the script that sets up ASN, this creates all the control tables that ASN expects
+Still as user db2inst1, run the script that sets up ASN, this creates all the control tables that ASN expects
 
 $ db2 -tvmf /asncdctools/src/asncdctables.sql
 
@@ -78,12 +83,10 @@ $ db2 import from /asncdctools/src/data2.csv of del replace into DEMO.SIMPLE
 
 # register tables in ASN
 
-cd /asncdctools/src/
+edit /asncdctools/src/connection.json and update values for the db2 connection
 
-edit connection.json and update values for the db2 connection
-
-python3.6 /asncdctools/src/asntable.py -a   -s BBANK -t DONORS
-python3.6 /asncdctools/src/asntable.py -a   -s DEMO -t SIMPLE
+python /asncdctools/src/asntable.py -a   -s BBANK -t DONORS
+python /asncdctools/src/asntable.py -a   -s DEMO -t SIMPLE
 
 
 If you get the following error, it might be that the you need to bind
@@ -92,9 +95,9 @@ certain functions in public mode
 
 com.ibm.db2.jcc.a.SqlException: DB2 SQL error: SQLCODE: -443, SQLSTATE: 38553, SQLERRMC: SYSIBM.SQLCOLUMNS (SCI95599)
 
-Do the following on the database:
+Do the following on the database (still as user db2inst1):
 
-$ cd sqllib/bnd
+$ cd $HOME/sqllib/bnd
 $ db2 connect to TESTDB
 $ db2 bind db2schema.bnd blocking all grant public sqlerror continue 
 
@@ -112,12 +115,11 @@ Then we change in ASNCDC.IBMSNAP_REGISTER STATE all tables to the STATE 'A'.
 We can check the state of all registered tables:
 
 $ cd /asncdctools/src/
-$ python3.6 /asncdctools/src/asntablestate.py 
+$ python /asncdctools/src/asntablestate.py 
 
-and then change them:
+and then change them: update all tables with the STATE to A
 
-$ update all tables with the STATE to A
-$ python3.6 /asncdctools/src/asntablestate.py -a
+$ python /asncdctools/src/asntablestate.py -a
 
 We then need to restart asncap 
 
