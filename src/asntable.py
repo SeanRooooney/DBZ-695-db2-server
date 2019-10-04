@@ -1,7 +1,5 @@
 #!/usr/bin/python
 
-from confluent_kafka import avro
-from confluent_kafka.avro import AvroProducer
 import ibm_db
 import time
 import sys
