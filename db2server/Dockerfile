@@ -12,3 +12,8 @@ RUN mkdir -p /asncdctools/src
 ADD src /asncdctools/src
 
 RUN chmod -R  777  /asncdctools
+
+RUN mkdir /var/custom
+RUN chmod -R  777 /var/custom
+
+ADD src/cdcsetup.sh /var/custom
