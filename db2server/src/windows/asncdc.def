@@ -1,0 +1,3 @@
+LIBRARY asncdc
+EXPORTS
+        asncdcservice
